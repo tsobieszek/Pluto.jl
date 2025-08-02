@@ -5,7 +5,7 @@ Return whether the `request` was authenticated in one of two ways:
 1. the session's `secret` was included in the URL as a search parameter, or
 2. the session's `secret` was included in a cookie.
 """
-function is_authenticated(session::ServerSession, request::HTTP.Request)
+function is_authenticated(session::SharedSecretSession, request::HTTP.Request)
     (
         secret_in_url = try
             uri = HTTP.URI(request.target)
@@ -65,7 +65,7 @@ function auth_required(session::ServerSession, request::HTTP.Request)
     ext = splitext(path)[2]
     security = session.options.security
 
-    if path ∈ ("/ping", "/possible_binder_token_please") || ext ∈ (".ico", ".js", ".css", ".png", ".gif", ".svg", ".ico", ".woff2", ".woff", ".ttf", ".eot", ".otf", ".json", ".map")
+    if path ∈ ("/ping", "/possible_binder_token_please", "/login") || ext ∈ (".ico", ".js", ".css", ".png", ".gif", ".svg", ".ico", ".woff2", ".woff", ".ttf", ".eot", ".otf", ".json", ".map")
         false
     elseif path ∈ ("", "/")
         # / does not need security.require_secret_for_open_links, because this is how we handle the configuration where:
@@ -93,9 +93,8 @@ Returns an `HTTP.Handler` (i.e. a function `HTTP.Request → HTTP.Response`) whi
 
 This is for HTTP requests, the authentication mechanism for WebSockets is separate.
 """
-function auth_middleware(handler)
+function auth_middleware(session::SharedSecretSession, handler)
     return function (request::HTTP.Request)
-        session = session_from_context(request)
         required = auth_required(session, request)
         
         if !required || is_authenticated(session, request)

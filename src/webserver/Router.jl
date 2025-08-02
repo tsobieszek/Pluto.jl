@@ -1,4 +1,3 @@
-
 function http_router_for(session::ServerSession)
     router = HTTP.Router(default_404_response)
     security = session.options.security
@@ -9,6 +8,21 @@ function http_router_for(session::ServerSession)
     
     HTTP.register!(router, "GET", "/", create_serve_onefile(project_relative_path(frontend_directory(), "index.html")))
     HTTP.register!(router, "GET", "/edit", create_serve_onefile(project_relative_path(frontend_directory(), "editor.html")))
+    
+    if AuthenticationType(session) isa LoginAuthentication
+        HTTP.register!(router, "GET", "/login", r -> begin
+            try
+                if is_authenticated(session, r)
+                    uri = HTTP.URI(r.target)
+                    local next = get(HTTP.queryparams(uri), "next", "/")
+                    return redirect(next)
+                end
+            catch
+            end
+            asset_response(normpath(project_relative_path(frontend_directory(), "login", "login.html")))
+        end)
+        HTTP.register!(router, "POST", "/login", r -> handle_login(session, r))
+    end
 
     HTTP.register!(router, "GET", "/ping", r -> HTTP.Response(200, "OK!"))
     HTTP.register!(router, "GET", "/possible_binder_token_please", r -> session.binder_token === nothing ? HTTP.Response(200,"") : HTTP.Response(200, session.binder_token))
@@ -249,3 +263,9 @@ function scoped_router(base_url, base_router)
     return router
 end
 
+
+function redirect(location)
+    r = HTTP.Response(302)
+    HTTP.setheader(r, "Location" => location)
+    return r
+end

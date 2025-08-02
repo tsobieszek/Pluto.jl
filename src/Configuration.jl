@@ -111,6 +111,7 @@ The HTTP server options. See [`SecurityOptions`](@ref) for additional settings.
     on_event::Function = ON_EVENT_DEFAULT
 end
 
+const LOGIN_AUTHENTICATION_DEFAULT = false
 const REQUIRE_SECRET_FOR_OPEN_LINKS_DEFAULT = true
 const REQUIRE_SECRET_FOR_ACCESS_DEFAULT = true
 const WARN_ABOUT_UNTRUSTED_CODE_DEFAULT = true
@@ -119,6 +120,17 @@ const WARN_ABOUT_UNTRUSTED_CODE_DEFAULT = true
     SecurityOptions([; kwargs...])
 
 Security settings for the HTTP server. 
+
+# There are five possible configurations for the authentication:
+* If both `require_secret_for_open_links` and `require_secret_for_access` are `false`,
+  then the user is not required to authenticate to open a notebook.
+* The remaining four configuration options depend on the value of `login_authentication`
+  and `require_secret_for_access`:
+  - If `login_authentication` and `require_secret_for_open_links` are `true`, then the user
+    is required to login to open a notebook.
+  - If `login_authentication` and `require_secret_for_access` are `true`, then the user
+    is required to login to access the landing page as well as to open a notebook.
+  - The case where `login_authentication` is `false` is explained below.
 
 # Arguments
 
@@ -143,6 +155,7 @@ Security settings for the HTTP server.
 Note that Pluto is quickly evolving software, maintained by designers, educators and enthusiasts — not security experts. If security is a serious concern for your application, then we recommend running Pluto inside a container and verifying the relevant security aspects of Pluto yourself.
 """
 @option mutable struct SecurityOptions
+    login_authentication::Bool = LOGIN_AUTHENTICATION_DEFAULT
     require_secret_for_open_links::Bool = REQUIRE_SECRET_FOR_OPEN_LINKS_DEFAULT
     require_secret_for_access::Bool = REQUIRE_SECRET_FOR_ACCESS_DEFAULT
     warn_about_untrusted_code::Bool = WARN_ABOUT_UNTRUSTED_CODE_DEFAULT
@@ -304,6 +317,7 @@ function from_flat_kwargs(;
         injected_javascript_data_url::String = INJECTED_JAVASCRIPT_DATA_URL_DEFAULT,
         on_event::Function = ON_EVENT_DEFAULT,
 
+        login_authentication::Bool = LOGIN_AUTHENTICATION_DEFAULT,
         require_secret_for_open_links::Bool = REQUIRE_SECRET_FOR_OPEN_LINKS_DEFAULT,
         require_secret_for_access::Bool = REQUIRE_SECRET_FOR_ACCESS_DEFAULT,
         warn_about_untrusted_code::Bool = WARN_ABOUT_UNTRUSTED_CODE_DEFAULT,
@@ -355,6 +369,7 @@ function from_flat_kwargs(;
         on_event,
     )
     security = SecurityOptions(;
+        login_authentication,
         require_secret_for_open_links,
         require_secret_for_access,
         warn_about_untrusted_code,

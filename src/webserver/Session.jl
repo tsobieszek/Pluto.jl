@@ -30,28 +30,31 @@ function Base.getproperty(initiator::Initiator, property::Symbol)
     end
 end
 
-###
-# SERVER
-###
+ ###
+ # SERVER
+ ###
+ 
+##### The refactored `ServerSession` is now in `login/Session.jl` #####
+include("./login/Session.jl")
 
-"""
-The `ServerSession` keeps track of:
-
-- `connected_clients`: connected (web) clients
-- `notebooks`: running notebooks
-- `secret`: the web access token
-- `options`: global pluto configuration `Options` for this session.
-"""
-Base.@kwdef mutable struct ServerSession
-    connected_clients::Dict{Symbol,ClientSession} = Dict{Symbol,ClientSession}()
-    notebooks::Dict{UUID,Notebook} = Dict{UUID,Notebook}()
-    secret::String = String(rand(('a':'z') ∪ ('A':'Z') ∪ ('0':'9'), 8))
-    binder_token::Union{String,Nothing} = nothing
-    options::Configuration.Options = Configuration.Options()
-end
-
-function save_notebook(session::ServerSession, notebook::Notebook)
-    
+#  """
+#  The `ServerSession` keeps track of:
+ 
+#  - `connected_clients`: connected (web) clients
+#  - `notebooks`: running notebooks
+#  - `secret`: the web access token
+#  - `options`: global pluto configuration `Options` for this session.
+#  """
+#  Base.@kwdef mutable struct ServerSession
+#      connected_clients::Dict{Symbol,ClientSession} = Dict{Symbol,ClientSession}()
+#      notebooks::Dict{UUID,Notebook} = Dict{UUID,Notebook}()
+#      secret::String = String(rand(('a':'z') ∪ ('A':'Z') ∪ ('0':'9'), 8))
+#      binder_token::Union{String,Nothing} = nothing
+#      options::Configuration.Options = Configuration.Options()
+#  end
+ 
+ function save_notebook(session::ServerSession, notebook::Notebook)
+      
     # Notify event_listener from here
     try_event_call(session, FileSaveEvent(notebook))
     if !session.options.server.disable_writing_notebook_files

@@ -148,8 +148,7 @@ function run!(session::ServerSession)
     warn_julia_compat()
 
     pluto_router = http_router_for(session)
-    store_session_middleware = create_session_context_middleware(session)
-    app = pluto_router |> auth_middleware |> store_session_middleware
+    app = auth_middleware(session, pluto_router)
 
     let n = session.options.server.notebook
         SessionActions.open.((session,), 
@@ -374,7 +373,7 @@ function pretty_address(session::ServerSession, hostIP, port)
 
     url_params = Dict{String,String}()
 
-    if session.options.security.require_secret_for_access
+    if session.options.security.require_secret_for_access && AuthenticationType(session) isa SharedSecretAuthentication
         url_params["secret"] = session.secret
     end
     fav_notebook = let n = session.options.server.notebook

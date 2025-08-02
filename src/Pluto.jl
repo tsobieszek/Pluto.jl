@@ -80,10 +80,13 @@ include("./webserver/MsgPack.jl")
 include("./webserver/SessionActions.jl")
 include("./webserver/Static.jl")
 include("./webserver/Authentication.jl")
+include("./webserver/login/Authentication.jl")
 include("./webserver/Router.jl")
 include("./webserver/Dynamic.jl")
 include("./webserver/REPLTools.jl")
 include("./webserver/WebServer.jl")
+
+include("./webserver/login/Login.jl")
 
 const reset_notebook_environment = PkgUtils.reset_notebook_environment
 const update_notebook_environment = PkgUtils.update_notebook_environment
