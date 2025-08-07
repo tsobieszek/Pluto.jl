@@ -6,7 +6,11 @@ function http_router_for(session::ServerSession)
         return request::HTTP.Request -> asset_response(normpath(path))
     end
     
-    HTTP.register!(router, "GET", "/", create_serve_onefile(project_relative_path(frontend_directory(), "index.html")))
+    if session.options.server.extended_landing_page
+        HTTP.register!(router, "GET", "/", create_serve_onefile(project_relative_path(frontend_directory(), "login", "landing.html")))        
+    else
+        HTTP.register!(router, "GET", "/", create_serve_onefile(project_relative_path(frontend_directory(), "index.html")))
+    end
     HTTP.register!(router, "GET", "/edit", create_serve_onefile(project_relative_path(frontend_directory(), "editor.html")))
     
     if AuthenticationType(session) isa LoginAuthentication
@@ -22,6 +26,7 @@ function http_router_for(session::ServerSession)
             asset_response(normpath(project_relative_path(frontend_directory(), "login", "login.html")))
         end)
         HTTP.register!(router, "POST", "/login", r -> handle_login(session, r))
+        HTTP.register!(router, "POST", "/logout", r -> handle_logout(session, r))
     end
 
     HTTP.register!(router, "GET", "/ping", r -> HTTP.Response(200, "OK!"))

@@ -59,6 +59,7 @@ const SIMULATED_LAG_DEFAULT = 0.0
 const SIMULATED_PKG_LAG_DEFAULT = 0.0
 const INJECTED_JAVASCRIPT_DATA_URL_DEFAULT = "data:text/javascript;base64,"
 const ON_EVENT_DEFAULT = function(a) #= @info "$(typeof(a))" =# end
+const EXTENDED_LANDING_PAGE_DEFAULT = false
 
 """
     ServerOptions([; kwargs...])
@@ -87,6 +88,7 @@ The HTTP server options. See [`SecurityOptions`](@ref) for additional settings.
 - `on_event::Function = $ON_EVENT_DEFAULT`
 - `root_url::Union{Nothing,String} = $ROOT_URL_DEFAULT` This setting is used to specify the root URL of the Pluto server, but this setting is *only* used to customize the launch message (*"Go to http://localhost:1234/ in your browser"*). You can probably ignore this and use `base_url` instead.
 - `base_url::String = "$BASE_URL_DEFAULT"` This (advanced) setting is used to specify a subpath at which the Pluto server will run, it should be a path starting and ending with a '/'. E.g. with `base_url = "/hello/world/"`, the server will run at `http://localhost:1234/hello/world/`, and you edit a notebook at `http://localhost:1234/hello/world/edit?id=...`.
+- `extended_landing_page::Bool = $EXTENDED_LANDING_PAGE_DEFAULT` Whether to show the extended landing page whith a side menu with a choice of notebooks, or the standard landing page.
 """
 @option mutable struct ServerOptions
     root_url::Union{Nothing,String} = ROOT_URL_DEFAULT
@@ -109,6 +111,7 @@ The HTTP server options. See [`SecurityOptions`](@ref) for additional settings.
     simulated_pkg_lag::Real = SIMULATED_PKG_LAG_DEFAULT
     injected_javascript_data_url::String = INJECTED_JAVASCRIPT_DATA_URL_DEFAULT
     on_event::Function = ON_EVENT_DEFAULT
+    extended_landing_page::Bool = EXTENDED_LANDING_PAGE_DEFAULT
 end
 
 const LOGIN_AUTHENTICATION_DEFAULT = false
@@ -316,6 +319,7 @@ function from_flat_kwargs(;
         simulated_pkg_lag::Real = SIMULATED_PKG_LAG_DEFAULT,
         injected_javascript_data_url::String = INJECTED_JAVASCRIPT_DATA_URL_DEFAULT,
         on_event::Function = ON_EVENT_DEFAULT,
+        extended_landing_page::Bool = EXTENDED_LANDING_PAGE_DEFAULT,
 
         login_authentication::Bool = LOGIN_AUTHENTICATION_DEFAULT,
         require_secret_for_open_links::Bool = REQUIRE_SECRET_FOR_OPEN_LINKS_DEFAULT,
@@ -367,6 +371,7 @@ function from_flat_kwargs(;
         simulated_pkg_lag,
         injected_javascript_data_url,
         on_event,
+        extended_landing_page,
     )
     security = SecurityOptions(;
         login_authentication,

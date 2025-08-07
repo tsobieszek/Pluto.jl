@@ -37,6 +37,26 @@ function handle_login(session::ServerSession, request::HTTP.Request)
     end
 end
 
+"""
+Handles a POST request to /login. It logs out the user by deleting the session cookie
+and redirecting to the login page.
+"""
+function handle_logout(session::ServerSession, request::HTTP.Request)
+    token = nothing
+    for c in HTTP.cookies(request)
+        if c.name == SESSION_COOKIE
+            token = c.value
+            break
+        end
+    end
+    if token !== nothing
+        delete!(session.secret.tokens, token)
+    end
+    response = HTTP.Response(302)
+    HTTP.setheader(response, "Set-Cookie" => "$(SESSION_COOKIE)=; Max-Age=0; SameSite=Strict; HttpOnly")
+    HTTP.setheader(response, "Location" => "/login")
+    return response
+end
 
 """
 Parses the request body for "username" and "password" fields.

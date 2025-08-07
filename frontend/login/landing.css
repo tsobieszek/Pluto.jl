@@ -1,0 +1,89 @@
+/* There should be new slots created for the colour variables. Currently, they are repurposed. */
+#landing-page-container {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  grid-template-rows: auto 1fr;
+  margin: 0;
+}
+
+#logout-bar {
+  grid-column: 1 / -1;
+  grid-row: 1 / 2;
+  height: 2.5rem;
+  background-color: var(--restart-recc-header-color);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  position: sticky;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  top: 0;
+}
+
+#sidebar {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  position: fixed;
+  top: 2.5rem;
+}
+
+#content {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+#logout-button {
+  background-color: var(--footer-bg-color);
+  border: 3px solid var(--footer-border-color);
+  border-radius: .3em;
+  color: var(--footer-color);
+  box-shadow: -1px 2px 4px 0px var(--export-card-shadow-color);
+  padding: .3em;
+  min-height: fit-content;
+  cursor: pointer;
+}
+
+#error {
+    color: var(--process-failed);
+    margin: 1rem;
+}
+
+.julia-file-picker-container {
+    margin: 1rem 1.5rem;
+}
+
+.julia-file-picker {
+    border: 1px solid var(--cm-color-editor-tooltip-border);
+    border-radius: 4px;
+    box-shadow: 3px 3px 4px rgb(0 0 0 / 20%);
+    background: var(--autocomplete-menu-bg-color);
+    overflow-y: auto;
+}
+
+.julia-file-entry,
+.julia-dir-entry {
+    font-size: 14px;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    border-width: 0px;
+    max-height: 1.5rem;
+}
+
+.julia-file-entry:hover,
+.julia-file-entry:focus,
+.julia-dir-entry:hover,
+.julia-dir-entry:focus {
+    color: var(--cm-color-editor-li-aria-selected);
+    background: var(--cm-color-editor-li-aria-selected-bg);
+}
+
+.julia-file-entry::before {
+    content: "📄 ";
+    margin-right: 0.5em;
+}
+
+.julia-dir-entry::before {
+    content: "📁 ";
+    margin-right: 0.5em;
+}
